@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'application'
+    id 'org.graalvm.buildtools.native' version '0.10.2'
+}
+
+group = 'io.github.seerainer.fileshredder'
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java.srcDirs = [ 'src' ]
+        resources.srcDir 'resources'
+    }
+}
+
+def swtArtifact = 'org.eclipse.swt.'
+def os = System.getProperty("os.name")
+if (os.equals("Linux")) { swtArtifact += 'gtk.linux.' }
+else if (os.equals("Mac OS X")) { swtArtifact += 'cocoa.macosx.' }
+else if (os.startsWith("Win")) { swtArtifact += 'win32.win32.' }
+
+def arch = System.getProperty("os.arch")
+if (arch == "amd64" || arch == "x86_64") { swtArtifact += 'x86_64' }
+else if (arch == "aarch64") { swtArtifact += 'aarch64' }
+
+dependencies {
+    implementation("org.eclipse.platform:${swtArtifact}:3.125.0") {
+        exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'    
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'io.github.seerainer.fileshredder.FileShredder'
+}
+
+graalvmNative {
+    testSupport = false
+    toolchainDetection = true
+    
+    binaries {
+        main {
+            imageName = 'FileShredder'
+            mainClass = application.mainClass
+            buildArgs.add('-Ob')
+            buildArgs.add('-march=compatibility')
+            buildArgs.add('--gc=epsilon')
+            buildArgs.add('--no-fallback')
+            buildArgs.add('-R:MinHeapSize=32m')
+            buildArgs.add('-R:MaxHeapSize=2g')
+            buildArgs.add('-R:MaxNewSize=32m')
+            useFatJar = true
+        }
+    }
+}
+
+tasks.withType(Jar).configureEach {
+    exclude("META-INF/*.SF")
+    exclude("META-INF/*.RSA")
+    manifest {
+	    attributes 'Main-Class': application.mainClass
+    }
+}
