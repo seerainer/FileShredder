@@ -296,13 +296,7 @@ public class FileShredder {
 		for (final var item : list.getItems())
 			try (final var reader = new RandomAccessFile(new File(item), "rws"); //$NON-NLS-1$
 					final var channel = reader.getChannel()) {
-				final var size = channel.size();
-				var bufferSize = 1024;
-
-				if (bufferSize > size)
-					bufferSize = (int) size;
-
-				final var buff = ByteBuffer.allocate(bufferSize);
+				final var buff = ByteBuffer.allocate((int) channel.size());
 				channel.read(buff);
 				buff.flip();
 
