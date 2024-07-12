@@ -165,11 +165,11 @@ public class FileShredder {
 	}
 
 	private Shell open(final Display display) {
-		final var darkMode = System.getProperty("os.name").startsWith("Win") && Display.isSystemDarkTheme(); //$NON-NLS-1$ //$NON-NLS-2$
+		final var darkMode = Display.isSystemDarkTheme();
 		final var darkBack = new Color(0x30, 0x30, 0x30);
 		final var darkFore = new Color(0xDD, 0xDD, 0xDD);
 
-		if (darkMode) {
+		if ("win32".equals(SWT.getPlatform()) && darkMode) { //$NON-NLS-1$
 			display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", Boolean.TRUE); //$NON-NLS-1$
 			display.setData("org.eclipse.swt.internal.win32.useShellTitleColoring", Boolean.TRUE); //$NON-NLS-1$
 			display.setData("org.eclipse.swt.internal.win32.all.use_WS_BORDER", Boolean.TRUE); //$NON-NLS-1$
