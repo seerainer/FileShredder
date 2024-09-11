@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.10.2'
+    id 'org.graalvm.buildtools.native' version '0.10.3'
 }
 
 group = 'io.github.seerainer.fileshredder'
@@ -30,7 +30,7 @@ if (arch == "amd64" || arch == "x86_64") { swtArtifact += 'x86_64' }
 else if (arch == "aarch64") { swtArtifact += 'aarch64' }
 
 dependencies {
-    implementation("org.eclipse.platform:${swtArtifact}:3.126.0") {
+    implementation("org.eclipse.platform:${swtArtifact}:3.127.0") {
         exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'    
     }
 }
