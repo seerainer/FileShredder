@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.github.seerainer.fileshredder'
-version = '0.1.2'
+version = '0.1.3'
 
 repositories {
     mavenCentral()
@@ -43,6 +43,10 @@ java {
 
 application {
     mainClass = 'io.github.seerainer.fileshredder.FileShredder'
+    
+    if (os.equals("Mac OS X")) {
+        applicationDefaultJvmArgs += '-XstartOnFirstThread'
+    }
 }
 
 graalvmNative {

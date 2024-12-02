@@ -209,8 +209,7 @@ public class FileShredder {
 			list.removeAll();
 			list.setRedraw(true);
 
-			for (final File file : search())
-				addItem(file);
+			search().forEach(this::addItem);
 
 			list.setRedraw(true);
 
@@ -293,7 +292,7 @@ public class FileShredder {
 		final var rand = menu.getItem(2).getSelection();
 		final var rena = menu.getItem(5).getSelection();
 
-		for (final var item : list.getItems())
+		for (final var item : list.getItems()) {
 			try (final var reader = new RandomAccessFile(new File(item), "rws"); //$NON-NLS-1$
 					final var channel = reader.getChannel()) {
 				final var buff = ByteBuffer.allocate((int) channel.size());
@@ -314,21 +313,23 @@ public class FileShredder {
 					secu.nextBytes(bytes);
 					channel.write(buff, 0);
 				}
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
 
-				channel.close();
-				reader.close();
+			var path = Path.of(item);
 
-				var path = Path.of(item);
-
+			try {
 				if (rena)
 					path = renameFile(path);
 
 				Files.delete(path);
 			} catch (final Exception e) {
 				e.printStackTrace();
-			} finally {
-				list.remove(item);
 			}
+
+			list.remove(item);
+		}
 
 		return true;
 	}
