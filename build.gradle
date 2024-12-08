@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.10.3'
+    id 'org.graalvm.buildtools.native' version '0.10.4'
 }
 
 group = 'io.github.seerainer.fileshredder'
@@ -30,7 +30,7 @@ if (arch == "amd64" || arch == "x86_64") { swtArtifact += 'x86_64' }
 else if (arch == "aarch64") { swtArtifact += 'aarch64' }
 
 dependencies {
-    implementation("org.eclipse.platform:${swtArtifact}:3.127.0") {
+    implementation("org.eclipse.platform:${swtArtifact}:3.128.0") {
         exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'    
     }
 }
@@ -38,6 +38,7 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
+	vendor = JvmVendorSpec.GRAAL_VM
     }
 }
 
@@ -61,7 +62,7 @@ graalvmNative {
             buildArgs.add('-march=compatibility')
             buildArgs.add('--gc=epsilon')
             buildArgs.add('--no-fallback')
-            buildArgs.add('-R:MinHeapSize=32m')
+            buildArgs.add('-R:MinHeapSize=64m')
             buildArgs.add('-R:MaxHeapSize=2g')
             buildArgs.add('-R:MaxNewSize=32m')
             useFatJar = true
