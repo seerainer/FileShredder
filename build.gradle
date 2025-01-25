@@ -19,15 +19,33 @@ sourceSets {
     }
 }
 
-def swtArtifact = 'org.eclipse.swt.'
-def os = System.getProperty("os.name")
-if (os.equals("Linux")) { swtArtifact += 'gtk.linux.' }
-else if (os.equals("Mac OS X")) { swtArtifact += 'cocoa.macosx.' }
-else if (os.startsWith("Win")) { swtArtifact += 'win32.win32.' }
+ext {
+    swtArtifact = 'org.eclipse.swt.'
+    os = System.getProperty("os.name")
+    arch = System.getProperty("os.arch")
+}
 
-def arch = System.getProperty("os.arch")
-if (arch == "amd64" || arch == "x86_64") { swtArtifact += 'x86_64' }
-else if (arch == "aarch64") { swtArtifact += 'aarch64' }
+switch (os) {
+    case 'Linux':
+        swtArtifact += 'gtk.linux.'
+        break
+    case 'Mac OS X':
+        swtArtifact += 'cocoa.macosx.'
+        break
+    default:
+        if (os.startsWith("Win")) {
+            swtArtifact += 'win32.win32.'
+        }
+}
+
+switch (arch) {
+    case ['amd64', 'x86_64']:
+        swtArtifact += 'x86_64'
+        break
+    case 'aarch64':
+        swtArtifact += 'aarch64'
+        break
+}
 
 dependencies {
     implementation("org.eclipse.platform:${swtArtifact}:3.128.0") {
@@ -38,15 +56,17 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
-	vendor = JvmVendorSpec.GRAAL_VM
+        vendor = JvmVendorSpec.GRAAL_VM
     }
 }
 
 application {
     mainClass = 'io.github.seerainer.fileshredder.FileShredder'
-    
+}
+
+run {
     if (os.equals("Mac OS X")) {
-        applicationDefaultJvmArgs += '-XstartOnFirstThread'
+        jvmArgs += '-XstartOnFirstThread'
     }
 }
 
@@ -63,8 +83,8 @@ graalvmNative {
             buildArgs.add('--gc=epsilon')
             buildArgs.add('--no-fallback')
             buildArgs.add('-R:MinHeapSize=64m')
-            buildArgs.add('-R:MaxHeapSize=2g')
-            buildArgs.add('-R:MaxNewSize=32m')
+            buildArgs.add('-R:MaxHeapSize=1g')
+            buildArgs.add('-R:MaxNewSize=128m')
             useFatJar = true
         }
     }
