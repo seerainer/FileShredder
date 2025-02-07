@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.github.seerainer.fileshredder'
-version = '0.1.3'
+version = '0.1.4'
 
 repositories {
     mavenCentral()
@@ -82,9 +82,9 @@ graalvmNative {
             buildArgs.add('-march=compatibility')
             buildArgs.add('--gc=epsilon')
             buildArgs.add('--no-fallback')
-            buildArgs.add('-R:MinHeapSize=64m')
-            buildArgs.add('-R:MaxHeapSize=1g')
-            buildArgs.add('-R:MaxNewSize=128m')
+            buildArgs.add('-R:MinHeapSize=256m')
+            buildArgs.add('-R:MaxHeapSize=2g')
+            buildArgs.add('-R:MaxNewSize=512m')
             useFatJar = true
         }
     }

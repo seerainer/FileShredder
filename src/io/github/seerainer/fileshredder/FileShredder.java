@@ -22,7 +22,6 @@ import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
@@ -52,14 +51,15 @@ import org.eclipse.swt.widgets.Shell;
 public class FileShredder {
 
 	public static void main(final String[] args) {
-		System.setProperty("org.eclipse.swt.display.useSystemTheme", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+		System.setProperty("org.eclipse.swt.display.useSystemTheme", "true");
 
 		final var display = new Display();
 		final var shell = new FileShredder(args).open(display);
-
-		while (!shell.isDisposed())
-			if (!display.readAndDispatch())
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
 				display.sleep();
+			}
+		}
 		display.dispose();
 	}
 
@@ -67,14 +67,18 @@ public class FileShredder {
 			final int acc, final String text) {
 		final var item = new MenuItem(parent, state);
 
-		if (menu != null)
+		if (menu != null) {
 			item.setMenu(menu);
-		if (listener != null)
+		}
+		if (listener != null) {
 			item.addSelectionListener(listener);
-		if (acc > 0)
+		}
+		if (acc > 0) {
 			item.setAccelerator(acc);
-		if (text != null)
+		}
+		if (text != null) {
 			item.setText(text);
+		}
 
 		return item;
 	}
@@ -84,8 +88,9 @@ public class FileShredder {
 
 		var p = path;
 
-		for (var i = 0; i < 25; i++)
+		for (var i = 0; i < 25; i++) {
 			p = Files.move(p, Path.of(dir + File.separator + UUID.randomUUID()));
+		}
 
 		return p;
 	}
@@ -96,18 +101,21 @@ public class FileShredder {
 	private String[] args;
 
 	private FileShredder(final String[] args) {
-		if (args.length > 0)
+		if (args.length > 0) {
 			this.args = args;
+		}
 	}
 
 	private void addItem(final File file) {
-		if (file.exists() && file.canRead() && file.canWrite() && file.isFile())
+		if (file.exists() && file.canRead() && file.canWrite() && file.isFile()) {
 			list.add(file.getAbsolutePath());
+		}
 	}
 
 	private void disableList() {
-		if (list.getItemCount() == 0)
+		if (list.getItemCount() == 0) {
 			list.setEnabled(false);
+		}
 	}
 
 	private Menu menuBar() {
@@ -145,8 +153,9 @@ public class FileShredder {
 		ren.setSelection(true);
 
 		shred.addSelectionListener(widgetSelectedAdapter(e -> {
-			if (shredFiles() && dir != null && del.getSelection())
+			if (shredFiles() && dir != null && del.getSelection()) {
 				shredFolder(Path.of(dir).toFile());
+			}
 		}));
 
 		file.addMenuListener(menuShownAdapter(e -> {
@@ -192,19 +201,22 @@ public class FileShredder {
 
 		shell.open();
 
-		if (args != null)
+		if (args != null) {
 			if (Path.of(args[0]).toFile().isDirectory()) {
 				dir = args[0];
 				openDir();
-			} else
+			} else {
 				openFiles();
+			}
+		}
 
 		return shell;
 	}
 
 	private void openDir() {
-		if (dir == null)
+		if (dir == null) {
 			dir = new DirectoryDialog(shell).open();
+		}
 		if (dir != null) {
 			list.removeAll();
 			list.setRedraw(true);
@@ -216,8 +228,9 @@ public class FileShredder {
 			if (list.getItemCount() > 0) {
 				list.setEnabled(true);
 
-				if (shredFiles() && shell.getMenuBar().getItem(1).getMenu().getItem(4).getSelection())
+				if (shredFiles() && shell.getMenuBar().getItem(1).getMenu().getItem(4).getSelection()) {
 					shredFolder(Path.of(dir).toFile());
+				}
 			}
 		}
 
@@ -235,8 +248,9 @@ public class FileShredder {
 				final var length = files.length;
 				args = new String[length];
 
-				for (var i = 0; i < length; i++)
+				for (var i = 0; i < length; i++) {
 					args[i] = dialog.getFilterPath() + File.separator + files[i];
+				}
 			}
 		}
 
@@ -244,8 +258,9 @@ public class FileShredder {
 			list.removeAll();
 			list.setRedraw(false);
 
-			for (final String arg : args)
+			for (final String arg : args) {
 				addItem(Path.of(arg).toFile());
+			}
 
 			list.setRedraw(true);
 
@@ -268,60 +283,60 @@ public class FileShredder {
 		final var dirs = new Stack<File>();
 		final var startdir = new File(dir);
 
-		if (startdir.isDirectory())
+		if (startdir.isDirectory()) {
 			dirs.push(startdir);
+		}
 
-		while (dirs.size() > 0)
-			for (final var file : dirs.pop().listFiles())
-				if (file.isDirectory())
+		while (dirs.size() > 0) {
+			for (final var file : dirs.pop().listFiles()) {
+				if (file.isDirectory()) {
 					dirs.push(file);
-				else if (file.isFile())
+				} else if (file.isFile()) {
 					files.add(file);
+				}
+			}
+		}
 
 		return files;
 	}
 
 	private boolean shredFiles() {
-		if (message() == SWT.NO)
+		if (message() == SWT.NO) {
 			return false;
+		}
 
 		final var secu = new SecureRandom();
 		final var menu = shell.getMenuBar().getItem(1).getMenu();
-		final var zero = menu.getItem(0).getSelection();
-		final var maxi = menu.getItem(1).getSelection();
-		final var rand = menu.getItem(2).getSelection();
-		final var rena = menu.getItem(5).getSelection();
+		final var fillWithZeros = menu.getItem(0).getSelection();
+		final var fillWithMax = menu.getItem(1).getSelection();
+		final var fillWithRandom = menu.getItem(2).getSelection();
+		final var renameEnabled = menu.getItem(5).getSelection();
 
 		for (final var item : list.getItems()) {
-			try (final var reader = new RandomAccessFile(new File(item), "rws"); //$NON-NLS-1$
-					final var channel = reader.getChannel()) {
-				final var buff = ByteBuffer.allocate((int) channel.size());
-				channel.read(buff);
-				buff.flip();
-
-				final var bytes = buff.array();
-
-				if (zero) {
-					Arrays.fill(bytes, (byte) 0x0);
-					channel.write(buff, 0);
-				}
-				if (maxi) {
-					Arrays.fill(bytes, (byte) 0xFF);
-					channel.write(buff, 0);
-				}
-				if (rand) {
-					secu.nextBytes(bytes);
-					channel.write(buff, 0);
-				}
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-
 			var path = Path.of(item);
 
 			try {
-				if (rena)
+				if (renameEnabled) {
 					path = renameFile(path);
+				}
+
+				final var fileSize = Files.size(path);
+				final var buffer = new byte[4096];
+				try (var file = new RandomAccessFile(path.toFile(), "rws")) {
+					for (var i = 0; i < fileSize; i += buffer.length) {
+						secu.nextBytes(buffer);
+						if (fillWithZeros) {
+							Arrays.fill(buffer, (byte) 0x0);
+						} else if (fillWithMax) {
+							Arrays.fill(buffer, (byte) 0xFF);
+						} else if (fillWithRandom) {
+							secu.nextBytes(buffer);
+						}
+
+						file.seek(i);
+						file.write(buffer, 0, (int) Math.min(buffer.length, fileSize - i));
+					}
+				}
 
 				Files.delete(path);
 			} catch (final Exception e) {
@@ -337,12 +352,16 @@ public class FileShredder {
 	private void shredFolder(final File folder) {
 		final var files = folder.listFiles();
 
-		if (files != null)
-			for (final var file : files)
-				if (file.isDirectory())
+		if (files != null) {
+			for (final var file : files) {
+				if (file.isDirectory()) {
 					shredFolder(file);
+				}
+			}
+		}
 
-		if (!Path.of(dir).toFile().equals(folder))
+		if (!Path.of(dir).toFile().equals(folder)) {
 			folder.delete();
+		}
 	}
 }
