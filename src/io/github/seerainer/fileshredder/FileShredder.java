@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Philipp Seerainer
+ * Copyright 2025 Philipp Seerainer
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,35 +121,35 @@ public class FileShredder {
 	private Menu menuBar() {
 		final var menu = new Menu(shell, SWT.BAR);
 		final var file = new Menu(shell, SWT.DROP_DOWN);
-		menuItem(menu, SWT.CASCADE, file, null, 0, "&File"); //$NON-NLS-1$
+		menuItem(menu, SWT.CASCADE, file, null, 0, "&File");
 		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> {
 			reset();
 			openFiles();
-		}), 0, "&Open Files"); //$NON-NLS-1$
+		}), 0, "&Open Files");
 		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> {
 			reset();
 			openDir();
-		}), 0, "Open &Folder (Recursive)"); //$NON-NLS-1$
+		}), 0, "Open &Folder (Recursive)");
 		menuItem(file, SWT.SEPARATOR, null, null, 0, null);
 		final var clear = menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> {
 			list.removeAll();
 			list.setEnabled(false);
-		}), 0, "&Clear List"); //$NON-NLS-1$
+		}), 0, "&Clear List");
 		menuItem(file, SWT.SEPARATOR, null, null, 0, null);
-		final var shred = menuItem(file, SWT.PUSH, null, null, 0, "&Delete Files"); //$NON-NLS-1$
+		final var shred = menuItem(file, SWT.PUSH, null, null, 0, "&Delete Files");
 		menuItem(file, SWT.SEPARATOR, null, null, 0, null);
-		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> shell.close()), SWT.ESC, "E&xit\tEsc"); //$NON-NLS-1$
+		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> shell.close()), SWT.ESC, "E&xit\tEsc");
 
 		final var mode = new Menu(shell, SWT.DROP_DOWN);
-		menuItem(menu, SWT.CASCADE, mode, null, 0, "&Options"); //$NON-NLS-1$
-		final var zero = menuItem(mode, SWT.CHECK, null, null, 0, "Fill with 0x0 bytes"); //$NON-NLS-1$
-		final var maxi = menuItem(mode, SWT.CHECK, null, null, 0, "Fill with 0xFF bytes"); //$NON-NLS-1$
-		final var rand = menuItem(mode, SWT.CHECK, null, null, 0, "Fill with random bytes"); //$NON-NLS-1$
+		menuItem(menu, SWT.CASCADE, mode, null, 0, "&Options");
+		final var zero = menuItem(mode, SWT.CHECK, null, null, 0, "Fill with 0x0 bytes");
+		final var maxi = menuItem(mode, SWT.CHECK, null, null, 0, "Fill with 0xFF bytes");
+		final var rand = menuItem(mode, SWT.CHECK, null, null, 0, "Fill with random bytes");
 		rand.setSelection(true);
 		menuItem(mode, SWT.SEPARATOR, null, null, 0, null);
-		final var del = menuItem(mode, SWT.CHECK, null, null, 0, "Delete Folder (Open Folder)"); //$NON-NLS-1$
+		final var del = menuItem(mode, SWT.CHECK, null, null, 0, "Delete Folder (Open Folder)");
 		del.setSelection(true);
-		final var ren = menuItem(mode, SWT.CHECK, null, null, 0, "Rename Files (25x times)"); //$NON-NLS-1$
+		final var ren = menuItem(mode, SWT.CHECK, null, null, 0, "Rename Files (25x times)");
 		ren.setSelection(true);
 
 		shred.addSelectionListener(widgetSelectedAdapter(e -> {
@@ -168,8 +168,8 @@ public class FileShredder {
 
 	private int message() {
 		final var mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.NO | SWT.YES);
-		mb.setMessage("Secure delete files?\n\nFiles cannot be recovered!"); //$NON-NLS-1$
-		mb.setText("Warning!"); //$NON-NLS-1$
+		mb.setMessage("Secure delete files?\n\nFiles cannot be recovered!");
+		mb.setText("Warning!");
 		return mb.open();
 	}
 
@@ -178,18 +178,18 @@ public class FileShredder {
 		final var darkBack = new Color(0x30, 0x30, 0x30);
 		final var darkFore = new Color(0xDD, 0xDD, 0xDD);
 
-		if ("win32".equals(SWT.getPlatform()) && darkMode) { //$NON-NLS-1$
-			display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", Boolean.TRUE); //$NON-NLS-1$
-			display.setData("org.eclipse.swt.internal.win32.useShellTitleColoring", Boolean.TRUE); //$NON-NLS-1$
-			display.setData("org.eclipse.swt.internal.win32.all.use_WS_BORDER", Boolean.TRUE); //$NON-NLS-1$
-			display.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor", darkFore); //$NON-NLS-1$
-			display.setData("org.eclipse.swt.internal.win32.menuBarBackgroundColor", darkBack); //$NON-NLS-1$
+		if ("win32".equals(SWT.getPlatform()) && darkMode) {
+			display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", Boolean.TRUE);
+			display.setData("org.eclipse.swt.internal.win32.useShellTitleColoring", Boolean.TRUE);
+			display.setData("org.eclipse.swt.internal.win32.all.use_WS_BORDER", Boolean.TRUE);
+			display.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor", darkFore);
+			display.setData("org.eclipse.swt.internal.win32.menuBarBackgroundColor", darkBack);
 		}
 
 		shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setLayout(new FillLayout());
 		shell.setMenuBar(menuBar());
-		shell.setText("FileShredder | Secure file deletion"); //$NON-NLS-1$
+		shell.setText("FileShredder | Secure file deletion");
 
 		list = new List(shell, SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
 		list.setEnabled(false);
@@ -240,8 +240,8 @@ public class FileShredder {
 	private void openFiles() {
 		if (args == null) {
 			final var dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-			dialog.setFilterNames(new String[] { "All Files" }); //$NON-NLS-1$
-			dialog.setFilterExtensions(new String[] { "*.*" }); //$NON-NLS-1$
+			dialog.setFilterNames(new String[] { "All Files" });
+			dialog.setFilterExtensions(new String[] { "*.*" });
 
 			if (dialog.open() != null) {
 				final var files = dialog.getFileNames();
@@ -324,7 +324,6 @@ public class FileShredder {
 				final var buffer = new byte[4096];
 				try (var file = new RandomAccessFile(path.toFile(), "rws")) {
 					for (var i = 0; i < fileSize; i += buffer.length) {
-						secu.nextBytes(buffer);
 						if (fillWithZeros) {
 							Arrays.fill(buffer, (byte) 0x0);
 						} else if (fillWithMax) {
