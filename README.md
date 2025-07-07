@@ -1,7 +1,5 @@
 # FileShredder
 
-[![CodeQL](https://github.com/seerainer/FileShredder/workflows/CodeQL/badge.svg)](https://github.com/seerainer/FileShredder/security/code-scanning)
-
 ~~~ sh
 git clone https://github.com/seerainer/FileShredder.git
 ~~~
