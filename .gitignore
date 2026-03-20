@@ -3,3 +3,21 @@
 
 # Ignore Gradle build output directory
 build
+
+*.class
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.ear
+/.settings
+/.classpath
+/.project
+/bin
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# OS X
+.DS_Store

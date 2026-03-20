@@ -50,6 +50,17 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class FileShredder {
 
+	private List list;
+	private Shell shell;
+	private String dir;
+	private String[] args;
+
+	private FileShredder(final String[] args) {
+		if (args.length > 0) {
+			this.args = args;
+		}
+	}
+
 	public static void main(final String[] args) {
 		System.setProperty("org.eclipse.swt.display.useSystemTheme", "true");
 
@@ -89,21 +100,11 @@ public class FileShredder {
 		var p = path;
 
 		for (var i = 0; i < 25; i++) {
-			p = Files.move(p, Path.of(dir + File.separator + UUID.randomUUID()));
+			p = Files.move(p,
+					Path.of(new StringBuilder().append(dir).append(File.separator).append(UUID.randomUUID()).toString()));
 		}
 
 		return p;
-	}
-
-	private List list;
-	private Shell shell;
-	private String dir;
-	private String[] args;
-
-	private FileShredder(final String[] args) {
-		if (args.length > 0) {
-			this.args = args;
-		}
 	}
 
 	private void addItem(final File file) {
@@ -122,23 +123,23 @@ public class FileShredder {
 		final var menu = new Menu(shell, SWT.BAR);
 		final var file = new Menu(shell, SWT.DROP_DOWN);
 		menuItem(menu, SWT.CASCADE, file, null, 0, "&File");
-		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> {
+		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(_ -> {
 			reset();
 			openFiles();
 		}), 0, "&Open Files");
-		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> {
+		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(_ -> {
 			reset();
 			openDir();
 		}), 0, "Open &Folder (Recursive)");
 		menuItem(file, SWT.SEPARATOR, null, null, 0, null);
-		final var clear = menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> {
+		final var clear = menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(_ -> {
 			list.removeAll();
 			list.setEnabled(false);
 		}), 0, "&Clear List");
 		menuItem(file, SWT.SEPARATOR, null, null, 0, null);
 		final var shred = menuItem(file, SWT.PUSH, null, null, 0, "&Delete Files");
 		menuItem(file, SWT.SEPARATOR, null, null, 0, null);
-		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(e -> shell.close()), SWT.ESC, "E&xit\tEsc");
+		menuItem(file, SWT.PUSH, null, widgetSelectedAdapter(_ -> shell.close()), SWT.ESC, "E&xit\tEsc");
 
 		final var mode = new Menu(shell, SWT.DROP_DOWN);
 		menuItem(menu, SWT.CASCADE, mode, null, 0, "&Options");
@@ -152,13 +153,13 @@ public class FileShredder {
 		final var ren = menuItem(mode, SWT.CHECK, null, null, 0, "Rename Files (25x times)");
 		ren.setSelection(true);
 
-		shred.addSelectionListener(widgetSelectedAdapter(e -> {
+		shred.addSelectionListener(widgetSelectedAdapter(_ -> {
 			if (shredFiles() && dir != null && del.getSelection()) {
 				shredFolder(Path.of(dir).toFile());
 			}
 		}));
 
-		file.addMenuListener(menuShownAdapter(e -> {
+		file.addMenuListener(menuShownAdapter(_ -> {
 			clear.setEnabled(list.getItemCount() > 0);
 			shred.setEnabled(list.getItemCount() > 0 && (zero.getSelection() || maxi.getSelection() || rand.getSelection()));
 		}));
@@ -249,7 +250,8 @@ public class FileShredder {
 				args = new String[length];
 
 				for (var i = 0; i < length; i++) {
-					args[i] = dialog.getFilterPath() + File.separator + files[i];
+					args[i] = new StringBuilder().append(dialog.getFilterPath()).append(File.separator).append(files[i])
+							.toString();
 				}
 			}
 		}
@@ -258,7 +260,7 @@ public class FileShredder {
 			list.removeAll();
 			list.setRedraw(false);
 
-			for (final String arg : args) {
+			for (final var arg : args) {
 				addItem(Path.of(arg).toFile());
 			}
 
@@ -321,7 +323,7 @@ public class FileShredder {
 				}
 
 				final var fileSize = Files.size(path);
-				final var buffer = new byte[4096];
+				final var buffer = new byte[8192];
 				try (var file = new RandomAccessFile(path.toFile(), "rws")) {
 					for (var i = 0; i < fileSize; i += buffer.length) {
 						if (fillWithZeros) {

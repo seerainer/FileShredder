@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'application'
-    id 'org.graalvm.buildtools.native' version '0.11.2'
+    id 'org.graalvm.buildtools.native' version '0.11.5'
 }
 
 group = 'io.github.seerainer.fileshredder'
@@ -48,7 +48,7 @@ switch (arch) {
 }
 
 dependencies {
-    implementation("org.eclipse.platform:${swtArtifact}:3.131.0") {
+    implementation("org.eclipse.platform:${swtArtifact}:3.133.0") {
         exclude group: 'org.eclipse.platform', module: 'org.eclipse.swt'    
     }
 }
@@ -56,7 +56,7 @@ dependencies {
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
-        vendor = JvmVendorSpec.GRAAL_VM
+        // vendor = JvmVendorSpec.GRAAL_VM
     }
 }
 
@@ -97,4 +97,3 @@ tasks.withType(Jar).configureEach {
 	    attributes 'Main-Class': application.mainClass
     }
 }
-
